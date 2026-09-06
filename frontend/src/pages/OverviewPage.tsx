@@ -30,13 +30,29 @@ export const OverviewPage: React.FC<{ onOpenSql?: () => void }> = () => {
 
   if (loading && !data) {
     return (
-      <div className="p-8 text-center text-xs text-zinc-400">
-        Loading delivery intelligence metrics...
+      <div className="p-12 text-center text-xs text-zinc-500 space-y-2">
+        <div className="inline-block w-4 h-4 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin"></div>
+        <div>Loading delivery intelligence metrics...</div>
       </div>
     );
   }
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="p-12 text-center text-xs text-zinc-500 space-y-3 bg-white border border-zinc-200 rounded">
+        <div>Unable to load metrics from API service.</div>
+        <button
+          onClick={() => {
+            setLoading(true);
+            api.getOverview(timeRange).then(setData).finally(() => setLoading(false));
+          }}
+          className="px-3 py-1.5 bg-zinc-900 text-white rounded text-xs font-medium hover:bg-zinc-800"
+        >
+          Retry Connection
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

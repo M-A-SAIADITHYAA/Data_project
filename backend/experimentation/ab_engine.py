@@ -3,22 +3,26 @@ A/B Experimentation Engine for Food Delivery Operations
 Performs two-sample t-tests (continuous metrics like ETA Error, CSAT)
 and two-proportion z-tests (discrete conversion/late rates),
 computing confidence intervals (95% CI), standard errors, p-values, and automated conclusions.
+Uses Python standard library math without heavy binary dependencies.
 """
 
 import sqlite3
-import numpy as np
-import pandas as pd
-from scipy import stats
-from typing import Dict, Any
+import math
+from typing import Dict, Any, List
 import os
 
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "delivery_intelligence.db")
+
+def norm_sf(z: float) -> float:
+    """Survival function (1 - CDF) for standard normal distribution using math.erfc."""
+    return 0.5 * math.erfc(z / math.sqrt(2.0))
 
 class ExperimentEngine:
     @staticmethod
     def get_experiment_results(experiment_id: str = "EXP_ETA_V2") -> Dict[str, Any]:
         """Fetch raw experiment assignment data and compute rigorous statistical comparisons."""
         conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
         query = """
         SELECT 
             variant,
@@ -30,34 +34,34 @@ class ExperimentEngine:
         FROM experiments
         WHERE experiment_id = ?;
         """
-        df = pd.read_sql_query(query, conn, params=(experiment_id,))
+        rows = [dict(r) for r in conn.execute(query, (experiment_id,)).fetchall()]
         conn.close()
 
-        if df.empty:
+        if not rows:
             return {"error": "Experiment data not found"}
 
-        control = df[df["variant"] == "control"]
-        treatment = df[df["variant"] == "treatment"]
+        control = [r for r in rows if r["variant"] == "control"]
+        treatment = [r for r in rows if r["variant"] == "treatment"]
 
         n_c = len(control)
         n_t = len(treatment)
 
         # Helper: Two proportion z-test
         def proportion_test(col_name: str):
-            x_c = control[col_name].sum()
-            x_t = treatment[col_name].sum()
-            p_c = x_c / n_c if n_c > 0 else 0
-            p_t = x_t / n_t if n_t > 0 else 0
+            x_c = sum(1 for r in control if r[col_name] == 1)
+            x_t = sum(1 for r in treatment if r[col_name] == 1)
+            p_c = x_c / n_c if n_c > 0 else 0.0
+            p_t = x_t / n_t if n_t > 0 else 0.0
             diff = p_t - p_c
 
             # Pooled proportion for z-test
-            p_pool = (x_c + x_t) / (n_c + n_t)
-            se_pool = np.sqrt(p_pool * (1 - p_pool) * (1 / n_c + 1 / n_t))
-            z_score = (diff / se_pool) if se_pool > 0 else 0
-            p_val = float(2 * stats.norm.sf(abs(z_score)))
+            p_pool = (x_c + x_t) / (n_c + n_t) if (n_c + n_t) > 0 else 0.0
+            se_pool = math.sqrt(p_pool * (1.0 - p_pool) * (1.0 / n_c + 1.0 / n_t)) if p_pool > 0 and (1.0 - p_pool) > 0 else 0.001
+            z_score = (diff / se_pool) if se_pool > 0 else 0.0
+            p_val = float(2.0 * norm_sf(abs(z_score)))
 
             # Unpooled SE for confidence interval
-            se_unpooled = np.sqrt((p_c * (1 - p_c) / n_c) + (p_t * (1 - p_t) / n_t))
+            se_unpooled = math.sqrt((p_c * (1.0 - p_c) / n_c) + (p_t * (1.0 - p_t) / n_t)) if n_c > 0 and n_t > 0 else 0.001
             ci_low = diff - 1.96 * se_unpooled
             ci_high = diff + 1.96 * se_unpooled
 
@@ -73,16 +77,20 @@ class ExperimentEngine:
 
         # Helper: Two sample Welch's t-test
         def mean_test(col_name: str):
-            c_vals = control[col_name].dropna().values
-            t_vals = treatment[col_name].dropna().values
-            m_c = np.mean(c_vals)
-            m_t = np.mean(t_vals)
+            c_vals = [float(r[col_name]) for r in control if r[col_name] is not None]
+            t_vals = [float(r[col_name]) for r in treatment if r[col_name] is not None]
+            
+            m_c = sum(c_vals) / len(c_vals) if c_vals else 0.0
+            m_t = sum(t_vals) / len(t_vals) if t_vals else 0.0
             diff = m_t - m_c
 
-            t_stat, p_val = stats.ttest_ind(t_vals, c_vals, equal_var=False)
+            var_c = sum((x - m_c) ** 2 for x in c_vals) / (len(c_vals) - 1) if len(c_vals) > 1 else 0.0
+            var_t = sum((x - m_t) ** 2 for x in t_vals) / (len(t_vals) - 1) if len(t_vals) > 1 else 0.0
 
-            # 95% Confidence Interval for difference in means
-            se = np.sqrt(np.var(c_vals, ddof=1) / len(c_vals) + np.var(t_vals, ddof=1) / len(t_vals))
+            se = math.sqrt(var_c / len(c_vals) + var_t / len(t_vals)) if (len(c_vals) > 0 and len(t_vals) > 0) else 0.001
+            t_stat = (diff / se) if se > 0 else 0.0
+            p_val = float(2.0 * norm_sf(abs(t_stat)))
+
             ci_low = diff - 1.96 * se
             ci_high = diff + 1.96 * se
 
@@ -106,8 +114,6 @@ class ExperimentEngine:
             abs(eta_res["treatment_val"] - eta_res["control_val"]) / eta_res["control_val"] * 100.0, 1
         )
 
-        # Dynamic statistical conclusion based on calculated results
-        sig_text = "statistically significant" if eta_res["is_significant"] else "non-significant"
         conclusion = (
             f"Treatment (ML-adjusted ETA) reduced average ETA error by {eta_reduction_pct}% "
             f"(from {eta_res['control_val']} min down to {eta_res['treatment_val']} min, p < 0.001) "

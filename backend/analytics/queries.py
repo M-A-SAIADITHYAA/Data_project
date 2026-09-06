@@ -5,7 +5,6 @@ and percentile-based SLA bucketing. Also provides query strings for the 'View SQ
 """
 
 import sqlite3
-import pandas as pd
 from typing import Dict, Any, List, Optional
 import os
 
