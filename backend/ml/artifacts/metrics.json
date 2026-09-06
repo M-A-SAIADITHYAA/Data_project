@@ -1,0 +1,295 @@
+{
+  "model_name": "XGBoost Classifier",
+  "model_version": "xgb_delay_v2.4.1",
+  "target": "Delay > 10 minutes (is_late)",
+  "train_size": 17205,
+  "validation_size": 3687,
+  "test_size": 3687,
+  "test_late_prevalence": 0.23,
+  "primary_model": {
+    "name": "XGBoost",
+    "roc_auc": 0.987,
+    "pr_auc": 0.964,
+    "precision": 0.825,
+    "recall": 0.929,
+    "f1_score": 0.874,
+    "confusion_matrix": {
+      "true_positive": 789,
+      "false_positive": 167,
+      "true_negative": 2671,
+      "false_negative": 60
+    }
+  },
+  "baseline_model": {
+    "name": "Logistic Regression",
+    "roc_auc": 0.98,
+    "pr_auc": 0.948,
+    "precision": 0.768,
+    "recall": 0.929,
+    "f1_score": 0.841
+  },
+  "feature_importance": [
+    {
+      "feature": "prep_deviation",
+      "display_name": "Prep Time Deviation vs Base",
+      "importance": 2.6106
+    },
+    {
+      "feature": "traffic_multiplier",
+      "display_name": "Traffic Multiplier",
+      "importance": 1.4344
+    },
+    {
+      "feature": "estimated_transit_burden",
+      "display_name": "Composite Transit Burden",
+      "importance": 1.1026
+    },
+    {
+      "feature": "weather_severity",
+      "display_name": "Adverse Weather Severity",
+      "importance": 0.9115
+    },
+    {
+      "feature": "distance_km",
+      "display_name": "Trip Distance (km)",
+      "importance": 0.2549
+    },
+    {
+      "feature": "restaurant_orders_last_30min",
+      "display_name": "Restaurant 30m Order Load",
+      "importance": 0.1385
+    },
+    {
+      "feature": "restaurant_prep_time",
+      "display_name": "Restaurant Preparation Time",
+      "importance": 0.1334
+    },
+    {
+      "feature": "kitchen_load_ratio",
+      "display_name": "Kitchen Capacity Utilization",
+      "importance": 0.1242
+    },
+    {
+      "feature": "available_partners_nearby",
+      "display_name": "Available Nearby Riders",
+      "importance": 0.1074
+    },
+    {
+      "feature": "order_value",
+      "display_name": "Order Value",
+      "importance": 0.0509
+    },
+    {
+      "feature": "hour_of_day",
+      "display_name": "Hour of Day",
+      "importance": 0.0455
+    },
+    {
+      "feature": "delivery_partner_orders_today",
+      "display_name": "Rider Shift Fatigue (Orders Today)",
+      "importance": 0.0361
+    },
+    {
+      "feature": "traffic_severity",
+      "display_name": "Traffic Congestion Level",
+      "importance": 0.0152
+    },
+    {
+      "feature": "day_of_week",
+      "display_name": "Day of Week",
+      "importance": 0.0143
+    },
+    {
+      "feature": "is_dinner_rush",
+      "display_name": "Dinner Peak Surge",
+      "importance": 0.0138
+    },
+    {
+      "feature": "rider_deficit",
+      "display_name": "Rider Deficit Index",
+      "importance": 0.0107
+    },
+    {
+      "feature": "is_cloud_kitchen",
+      "display_name": "Cloud Kitchen Facility",
+      "importance": 0.0101
+    },
+    {
+      "feature": "is_lunch_rush",
+      "display_name": "Lunch Peak Surge",
+      "importance": 0.0076
+    }
+  ],
+  "threshold_analysis": [
+    {
+      "threshold": 0.1,
+      "precision": 0.624,
+      "recall": 0.988,
+      "f1": 0.765,
+      "tp": 839,
+      "fp": 505,
+      "fn": 10,
+      "tn": 2333
+    },
+    {
+      "threshold": 0.15,
+      "precision": 0.672,
+      "recall": 0.984,
+      "f1": 0.799,
+      "tp": 835,
+      "fp": 407,
+      "fn": 14,
+      "tn": 2431
+    },
+    {
+      "threshold": 0.2,
+      "precision": 0.704,
+      "recall": 0.976,
+      "f1": 0.818,
+      "tp": 829,
+      "fp": 349,
+      "fn": 20,
+      "tn": 2489
+    },
+    {
+      "threshold": 0.25,
+      "precision": 0.729,
+      "recall": 0.968,
+      "f1": 0.832,
+      "tp": 822,
+      "fp": 306,
+      "fn": 27,
+      "tn": 2532
+    },
+    {
+      "threshold": 0.3,
+      "precision": 0.753,
+      "recall": 0.963,
+      "f1": 0.845,
+      "tp": 818,
+      "fp": 268,
+      "fn": 31,
+      "tn": 2570
+    },
+    {
+      "threshold": 0.35,
+      "precision": 0.768,
+      "recall": 0.951,
+      "f1": 0.849,
+      "tp": 807,
+      "fp": 244,
+      "fn": 42,
+      "tn": 2594
+    },
+    {
+      "threshold": 0.4,
+      "precision": 0.786,
+      "recall": 0.946,
+      "f1": 0.858,
+      "tp": 803,
+      "fp": 219,
+      "fn": 46,
+      "tn": 2619
+    },
+    {
+      "threshold": 0.45,
+      "precision": 0.804,
+      "recall": 0.939,
+      "f1": 0.866,
+      "tp": 797,
+      "fp": 194,
+      "fn": 52,
+      "tn": 2644
+    },
+    {
+      "threshold": 0.5,
+      "precision": 0.825,
+      "recall": 0.929,
+      "f1": 0.874,
+      "tp": 789,
+      "fp": 167,
+      "fn": 60,
+      "tn": 2671
+    },
+    {
+      "threshold": 0.55,
+      "precision": 0.85,
+      "recall": 0.922,
+      "f1": 0.885,
+      "tp": 783,
+      "fp": 138,
+      "fn": 66,
+      "tn": 2700
+    },
+    {
+      "threshold": 0.6,
+      "precision": 0.868,
+      "recall": 0.906,
+      "f1": 0.886,
+      "tp": 769,
+      "fp": 117,
+      "fn": 80,
+      "tn": 2721
+    },
+    {
+      "threshold": 0.65,
+      "precision": 0.887,
+      "recall": 0.898,
+      "f1": 0.892,
+      "tp": 762,
+      "fp": 97,
+      "fn": 87,
+      "tn": 2741
+    },
+    {
+      "threshold": 0.7,
+      "precision": 0.905,
+      "recall": 0.883,
+      "f1": 0.894,
+      "tp": 750,
+      "fp": 79,
+      "fn": 99,
+      "tn": 2759
+    },
+    {
+      "threshold": 0.75,
+      "precision": 0.927,
+      "recall": 0.862,
+      "f1": 0.893,
+      "tp": 732,
+      "fp": 58,
+      "fn": 117,
+      "tn": 2780
+    },
+    {
+      "threshold": 0.8,
+      "precision": 0.938,
+      "recall": 0.837,
+      "f1": 0.885,
+      "tp": 711,
+      "fp": 47,
+      "fn": 138,
+      "tn": 2791
+    },
+    {
+      "threshold": 0.85,
+      "precision": 0.953,
+      "recall": 0.813,
+      "f1": 0.877,
+      "tp": 690,
+      "fp": 34,
+      "fn": 159,
+      "tn": 2804
+    },
+    {
+      "threshold": 0.9,
+      "precision": 0.966,
+      "recall": 0.762,
+      "f1": 0.852,
+      "tp": 647,
+      "fp": 23,
+      "fn": 202,
+      "tn": 2815
+    }
+  ]
+}

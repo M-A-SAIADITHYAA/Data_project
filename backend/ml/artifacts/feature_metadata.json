@@ -1,0 +1,42 @@
+{
+  "features": [
+    "restaurant_prep_time",
+    "prep_deviation",
+    "restaurant_orders_last_30min",
+    "kitchen_load_ratio",
+    "distance_km",
+    "traffic_multiplier",
+    "traffic_severity",
+    "available_partners_nearby",
+    "rider_deficit",
+    "delivery_partner_orders_today",
+    "weather_severity",
+    "hour_of_day",
+    "is_dinner_rush",
+    "is_lunch_rush",
+    "day_of_week",
+    "is_cloud_kitchen",
+    "order_value",
+    "estimated_transit_burden"
+  ],
+  "display_names": {
+    "restaurant_prep_time": "Restaurant Preparation Time",
+    "prep_deviation": "Prep Time Deviation vs Base",
+    "restaurant_orders_last_30min": "Restaurant 30m Order Load",
+    "kitchen_load_ratio": "Kitchen Capacity Utilization",
+    "distance_km": "Trip Distance (km)",
+    "traffic_multiplier": "Traffic Multiplier",
+    "traffic_severity": "Traffic Congestion Level",
+    "available_partners_nearby": "Available Nearby Riders",
+    "rider_deficit": "Rider Deficit Index",
+    "delivery_partner_orders_today": "Rider Shift Fatigue (Orders Today)",
+    "weather_severity": "Adverse Weather Severity",
+    "hour_of_day": "Hour of Day",
+    "is_dinner_rush": "Dinner Peak Surge",
+    "is_lunch_rush": "Lunch Peak Surge",
+    "day_of_week": "Day of Week",
+    "is_cloud_kitchen": "Cloud Kitchen Facility",
+    "order_value": "Order Value",
+    "estimated_transit_burden": "Composite Transit Burden"
+  }
+}
